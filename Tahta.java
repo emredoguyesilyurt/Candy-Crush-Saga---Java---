@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Tahta {
     
-    // oyunTahtasinda 1 ile 5 arasında sayılar tutulacak, bu sayılara göre tahtadaki karelerde hangi elemanların olduğu belirlenecek
+	// numbers between 1 and 5 will be kept in oyunTahtasi (gameBoard), according to these numbers, we will understand which characters are on a given tile
     // 1='1' 2='*' 3='-' 4='8' 5='a'
     static int[][] oyunTahtasi;
     static int satir;
@@ -14,32 +14,33 @@ public class Tahta {
     static int hedefPuan;
     
     
-    // tahta class'ı için bir constructor oluştur
+	// constructor for tahta class
     public static void tahtayiOlustur(int sat, int sut){
         
-        // tahtanın satır ve sütunlarını verilen değerlere eşitle
+		// set row and columns of the board equal to given values
         satir = sat;
         sutun = sut;
         
-        // oyunTahtasi arrayini verilen satır ve sütun sayısına göre oluştur
+		// create oyunTahtasi array according to the row and column numbers
         oyunTahtasi = new int [satir][sutun];
         
-        // oyunTahtasındaki her kareye 1 ile 5 arasında rastgele bir sayı yerleştir
-        // bu sayılar o karede hangi karakterin olduğunu göstermek için kullanılacak
+		// put random numbers between 1 and 5 into each tile on oyunTahtasi
+		// these numbers will show which character is on a given tile
         for(int i=0; i<satir; i++){
             
             for(int j=0; j<sutun; j++){
                 
-                // rastgeşe bir sayı bul
+				// find a random number
                 Random rand = new Random();
                 // rastgele sayı ( 1 <= sayi < 6 ) şeklinde olacak
+				// ( 1 <= random number < 6)
                 int ilk = 1;
                 int son = 6;
-                // gereken rastgele sayıyı bul
+				// generate the random number that is needed
                 int sayi = rand.nextInt(son-ilk) + ilk;
                 
                 
-                // oyun matrisindeki kareyi bulduğun sayıya eşitle
+				// set the tile on game board to the random number
                 oyunTahtasi[i][j] = sayi;
                 
             }
@@ -49,10 +50,10 @@ public class Tahta {
     }
     
     
-    // kullanıcının verdiği hamlenin geçerli olup olmadığını kontrol et
+	// function to check if user's move is valid or not
     public static boolean hamleGecerliMi(int x1, int y1, int x2, int y2){
         
-        // verilen satır ve sütun koordinatları tahtanın içindeyse kontrole devam et
+		// if the given row and colum coordinates are in the game board, continue with further checking
         if(
             (-1<x1) && (x1<satir) &&
             (-1<y1) && (y1<sutun) &&
@@ -60,58 +61,62 @@ public class Tahta {
             (-1<y2) && (y2<sutun)
             ){
 
-            // önce verilen hamleyi yap
+			// first, make the given move
             hamleYap(x1,y1,x2,y2);
 
-            // hamleyi yaptıktan sonra verilen koordinatlardaki şekerlerin etrafında en az iki tane aynı türden şeker olup olmadığını kontrol et
+			// after the move, check if the candies on given coordinates have at least two neighboring candies that are the same kind as them
             if(etrafiKontrolEt(x1,y1) || etrafiKontrolEt(x2,y2)){
 
-                // hamle geçerliyse true dön
-                // yaptığın hamleyi geri al (bu fonksiyon doğru dönerse hamleyi main fonksiyonu içinde yapacağız
+				// if the move is valid, return true
+				// take back the move you just made (if this function returns true, we will make the actual move in main function)
                 hamleYap(x1,y1,x2,y2);
                 return true;
 
             }
             else{
 
-                // hamle geçersizse false dön
-                // yaptığın hamleyi geri al (bu fonksiyon doğru dönerse hamleyi main fonksiyonu içinde yapacağız
+				// if the move is invalid, return false
+				// take back the move you just made (if this function returns true, we will make the actual move in main function)
                 hamleYap(x1,y1,x2,y2);
                 return false;
 
             }
 
         }
-        // verilen koordinatlar tahta dışındaysa false dön
+
+		// if the given coordinates are outside the game board, return false
         else
             return false;
     }
     
     
-    // kullanıcının verdiği koordinatlardaki şekerleri yer değiştir
+	// function to switch places of two candies
     public static void hamleYap(int x1, int y1, int x2, int y2){
         
-        // yerlerini değiştireceğin ilk ve ikinci şekerleri al
+		// take the first and second candies that you will switch places
         int ilkSeker = oyunTahtasi[x1][y1];
         int ikinciSeker = oyunTahtasi[x2][y2];
         
-        // aldığın şekerleri oyunTahtasındaki yeni yerlerine yerleştir
+		// put these candies on their new places on oyunTahtasi
         oyunTahtasi[x1][y1] = ikinciSeker;
         oyunTahtasi[x2][y2] = ilkSeker;
         
     }
     
     
-    // verilen bir koordinattaki şekerin sağında, solunda, üstünde ya da altında aynı türden bir şeker olup olmadığını kontrol et
+	
+	// check if a given candy have a neighboring candy (that is the same kind) on its right, up, down or left side
     public static boolean etrafiKontrolEt(int x, int y){
         
+		// flag will be increased by one each time the candy fails to have two neighbors of same kind on its sides
+		// if the flag reaches 6, the function will return false
         int flag = 0;
 
         
-        // (x,y)nin solunda en az iki şeker varsa, o iki şekerin (x,y)dekine eşit olup olmadığına bak
+		// if (x,y) has at least two candies on its left side, check if those two candies are equal to the one at (x,y)
         if(y > 1){
 
-            // şekerler (x,y)dekine eşitse true dön
+			// if the candies are equal, return true
             if(oyunTahtasi[x][y]==oyunTahtasi[x][y-1] && oyunTahtasi[x][y]==oyunTahtasi[x][y-2]){
                 //System.out.println(5);
                 return true;
@@ -122,10 +127,11 @@ public class Tahta {
         else
             flag++;
 
-        // (x,y)nin sağında en az iki şeker varsa, o iki şekerin (x,y)dekine eşit olup olmadığına bak
+
+		// if (x,y) has at least two candies on its right side, check if those are equal to (x,y)
         if(sutun - y > 2){
 
-            // şekerler (x,y)dekine eşitse true dön
+			// if the candies are equal, return true
             if(oyunTahtasi[x][y]==oyunTahtasi[x][y+1] && oyunTahtasi[x][y]==oyunTahtasi[x][y+2]){
                 //System.out.println(6);
                 return true;
@@ -137,10 +143,10 @@ public class Tahta {
             flag++;
 
         
-        // (x,y)nin üstünde en az iki şeker varsa, o iki şekerin (x,y)dekine eşit olup olmadığına bak
+		// if (x,y) has at least two candies on its up side, check if those are equal to (x,y)
         if(x > 1){
 
-            // şekerler (x,y)dekine eşitse true dön
+			// if equal, return true
             if(oyunTahtasi[x][y]==oyunTahtasi[x-1][y] && oyunTahtasi[x][y]==oyunTahtasi[x-2][y]){
                 //System.out.println(7);
                 return true;
@@ -151,10 +157,11 @@ public class Tahta {
         else
             flag++;
 
-        // (x,y)nin altında en az iki şeker varsa, o iki şekerin (x,y)dekine eşit olup olmadığına bak
+			
+		// if (x,y) has at least two candies on its down side, check if those are equal to (x,y)
         if(satir - x > 2){
 
-            // şekerler (x,y)dekine eşitse true dön
+			// if equal, return true
             if(oyunTahtasi[x][y]==oyunTahtasi[x+1][y] && oyunTahtasi[x][y]==oyunTahtasi[x+2][y]){
                 //System.out.println(8);
                 return true;
@@ -166,10 +173,10 @@ public class Tahta {
             flag++;
         
         
-        // (x,y)nin bir solunda bir de sağında aynı şekerden varsa true dön
+		// if (x,y) has one candy on its left side and one on its right side, check if they are equal to (x,y)
         if(sutun - y > 1 && y > 0){
 
-            // şekerler (x2,y2)dekine eşitse true dön
+			// if those candies are equal to (x,y), return true
             if(oyunTahtasi[x][y]==oyunTahtasi[x][y+1] && oyunTahtasi[x][y]==oyunTahtasi[x][y-1]){
                 //System.out.println(8);
                 return true;
@@ -180,10 +187,11 @@ public class Tahta {
         else
             flag++;
         
-        // (x,y)nin bir üstünde bir de altında aynı şekerden varsa true dön
+
+		// if (x,y) has one candy on its up side and one on its down side, check if they are equal to (x,y)
         if(satir - x > 1 && x > 0){
 
-            // şekerler (x,y)dekine eşitse true dön
+			// if equal, return true
             if(oyunTahtasi[x][y]==oyunTahtasi[x+1][y] && oyunTahtasi[x][y]==oyunTahtasi[x-1][y]){
                 //System.out.println(8);
                 return true;
@@ -195,6 +203,7 @@ public class Tahta {
             flag++;
         
         
+		// if flag reached 6, return false
         if(flag == 6)
             return false;
         else 
@@ -202,19 +211,20 @@ public class Tahta {
         
     }
     
-    
-    // tahtada en az bir tane silinebilecek şeker grubu olup olmadığını kontrol et
-    // sadece 3 tane yan yana ya da üst üste şeker varsa bile true dönecek
-    // eğer böyle bir grup varsa tahtada patlatma işlemi yapılacak
+	
+	
+	// check if the board has at least one group of candies that can be removed
+	// even if there are only 3 neighboring candies of the same kind, the funciton will return true
+	// if there is this kind of a group, the candies will be blown up
     public static boolean patlamaVarMi(){
         
         for(int i=0; i<satir; i++){
             
             for(int j=0; j<sutun; j++){
-                
-                // bütün koordinatlar için o koordinattaki şekerin etrafını kontrol et
-                // herhangi bir şekerin etrafında aynı türden 2 şeker daha varsa, patlama vardır. true dön
-                if(etrafiKontrolEt(i,j)){
+
+				// for each coordinate, check around that candy
+				// if any candy have 2 neighboring candies of the same kind, we will blow them up. return true
+				if(etrafiKontrolEt(i,j)){
                     
                     //System.out.println(i + "," + j);
                     return true;
@@ -230,7 +240,10 @@ public class Tahta {
     }
     
     
-    // T şeklinde dizilmiş şekerler varsa onları sil
+	/////////////// FUNCTIONS TO REMOVE DIFFERENT CANDY GROUPS ////////////////////////
+	
+	
+	// if there are candy groups shaped like T, remove them
     /*
     
     88aa88
@@ -238,23 +251,23 @@ public class Tahta {
     aa8*aa
     aa8*aa
     
-    tahtasındaki * elemanlarıyla aynı şekilde bir dizilim varsa
+    same shape as  * element above
     */
     public static void tSil(){
         
         
         /*
-        
+        a grouping like
+		
         ---
          -
          -
         
-        şeklinde bir dizilim
         */
         for(int i=0; i+2<satir; i++){
             for(int j=0; j+2<sutun; j++){
                 
-                // eğer T şeklinde bir dizilim varsa, bu dizilimdeki bütün şekerleri sıfıra eşitle (sil)
+				// set all candies on that group to 0 (remove them)
                 if( oyunTahtasi[i][j]==oyunTahtasi[i][j+1] &&
                     oyunTahtasi[i][j]==oyunTahtasi[i][j+2] &&
                     oyunTahtasi[i][j]==oyunTahtasi[i+1][j+1] &&
@@ -275,17 +288,17 @@ public class Tahta {
         }
         
         /*
-        
+        a grouping like
+		
         -
         ---
         -
         
-        şeklinde bir dizilim
         */
         for(int i=0; i+2<satir; i++){
             for(int j=0; j+2<sutun; j++){
                 
-                // eğer T şeklinde bir dizilim varsa, bu dizilimdeki bütün şekerleri sıfıra eşitle (sil)
+				// set all candies on that group to 0 (remove them)
                 if( oyunTahtasi[i][j]==oyunTahtasi[i+1][j] &&
                     oyunTahtasi[i][j]==oyunTahtasi[i+2][j] &&
                     oyunTahtasi[i][j]==oyunTahtasi[i+1][j+1] &&
@@ -312,12 +325,11 @@ public class Tahta {
          -
         ---
         
-        şeklinde bir dizilim
         */
         for(int i=0; i+2<satir; i++){
             for(int j=1; j+1<sutun; j++){
                 
-                // eğer T şeklinde bir dizilim varsa, bu dizilimdeki bütün şekerleri sıfıra eşitle (sil)
+				// set all candies on that group to 0 (remove them)
                 if( oyunTahtasi[i][j]==oyunTahtasi[i+1][j] &&
                     oyunTahtasi[i][j]==oyunTahtasi[i+2][j] &&
                     oyunTahtasi[i][j]==oyunTahtasi[i+2][j-1] &&
@@ -344,12 +356,11 @@ public class Tahta {
         ---
           -
         
-        şeklinde bir dizilim
         */
         for(int i=0; i+2<satir; i++){
             for(int j=2; j<sutun; j++){
                 
-                // eğer T şeklinde bir dizilim varsa, bu dizilimdeki bütün şekerleri sıfıra eşitle (sil)
+				// set all candies on that group to 0 (remove them)
                 if( oyunTahtasi[i][j]==oyunTahtasi[i+1][j] &&
                     oyunTahtasi[i][j]==oyunTahtasi[i+1][j-1] &&
                     oyunTahtasi[i][j]==oyunTahtasi[i+1][j-2] &&
@@ -372,7 +383,7 @@ public class Tahta {
     }
     
     
-    // toplam yedi elemanlı T şeklinde dizilmiş şekerler varsa onları sil
+    // T like grouping with 7 candies
     /*
     
     88aa88
@@ -380,7 +391,6 @@ public class Tahta {
     aa8*aa
     aa8*aa
     
-    tahtasındaki * elemanlarıyla aynı şekilde bir dizilim varsa
     */
     public static void buyukTSil(){
         
@@ -391,13 +401,12 @@ public class Tahta {
           -
           -
         
-        şeklinde bir dizilim
         */
         if(sutun>=5 && satir>=3){
             for(int i=0; i+2<satir; i++){
                 for(int j=0; j+4<sutun; j++){
 
-                    // eğer T şeklinde bir dizilim varsa, bu dizilimdeki bütün şekerleri sıfıra eşitle (sil)
+				// set all candies on that group to 0 (remove them)
                     if( oyunTahtasi[i][j]==oyunTahtasi[i][j+1] &&
                         oyunTahtasi[i][j]==oyunTahtasi[i][j+2] &&
                         oyunTahtasi[i][j]==oyunTahtasi[i][j+3] &&
@@ -429,13 +438,12 @@ public class Tahta {
         -
         -
         
-        şeklinde bir dizilim
         */
         if(satir>=5 && sutun>=5){
             for(int i=0; i+4<satir; i++){
                 for(int j=0; j+2<sutun; j++){
 
-                    // eğer T şeklinde bir dizilim varsa, bu dizilimdeki bütün şekerleri sıfıra eşitle (sil)
+				// set all candies on that group to 0 (remove them)
                     if( oyunTahtasi[i][j]==oyunTahtasi[i+1][j] &&
                         oyunTahtasi[i][j]==oyunTahtasi[i+2][j] &&
                         oyunTahtasi[i][j]==oyunTahtasi[i+3][j] &&
@@ -467,13 +475,13 @@ public class Tahta {
           -
         -----
         
-        şeklinde bir dizilim
+
         */
         if(satir>=5 && sutun>=5){
             for(int i=0; i+2<satir; i++){
                 for(int j=2; j+2<sutun; j++){
 
-                    // eğer T şeklinde bir dizilim varsa, bu dizilimdeki bütün şekerleri sıfıra eşitle (sil)
+				// set all candies on that group to 0 (remove them)
                     if( oyunTahtasi[i][j]==oyunTahtasi[i+1][j] &&
                         oyunTahtasi[i][j]==oyunTahtasi[i+2][j-2] &&
                         oyunTahtasi[i][j]==oyunTahtasi[i+2][j-1] &&
@@ -506,13 +514,12 @@ public class Tahta {
           -
           -
         
-        şeklinde bir dizilim
         */
         if(satir>=5 && sutun>=5){
             for(int i=0; i+4<satir; i++){
                 for(int j=2; j<sutun; j++){
 
-                    // eğer T şeklinde bir dizilim varsa, bu dizilimdeki bütün şekerleri sıfıra eşitle (sil)
+				// set all candies on that group to 0 (remove them)
                     if( oyunTahtasi[i][j]==oyunTahtasi[i+1][j] &&
                         oyunTahtasi[i][j]==oyunTahtasi[i+2][j] &&
                         oyunTahtasi[i][j]==oyunTahtasi[i+2][j-1] &&
@@ -538,14 +545,13 @@ public class Tahta {
     }
     
     
-    // L şeklinde şeker dizilimi varsa onları sil
+    // a grouping like L
     /*
     
     -
     -
     ---
     
-    gibi bir dizilim varsa
     */
         public static void LSil(){
         
@@ -556,12 +562,11 @@ public class Tahta {
         -
         ---
         
-        şeklinde bir dizilim
         */
         for(int i=0; i+2<satir; i++){
             for(int j=0; j+2<sutun; j++){
                 
-                // eğer T şeklinde bir dizilim varsa, bu dizilimdeki bütün şekerleri sıfıra eşitle (sil)
+				// set all candies on that group to 0 (remove them)
                 if( oyunTahtasi[i][j]==oyunTahtasi[i+1][j] &&
                     oyunTahtasi[i][j]==oyunTahtasi[i+2][j] &&
                     oyunTahtasi[i][j]==oyunTahtasi[i+2][j+1] &&
@@ -587,12 +592,10 @@ public class Tahta {
         -
         -
         
-        şeklinde bir dizilim
         */
         for(int i=0; i+2<satir; i++){
             for(int j=0; j+2<sutun; j++){
                 
-                // eğer T şeklinde bir dizilim varsa, bu dizilimdeki bütün şekerleri sıfıra eşitle (sil)
                 if( oyunTahtasi[i][j]==oyunTahtasi[i][j+1] &&
                     oyunTahtasi[i][j]==oyunTahtasi[i][j+2] &&
                     oyunTahtasi[i][j]==oyunTahtasi[i+1][j] &&
@@ -619,12 +622,10 @@ public class Tahta {
           -
         ---
         
-        şeklinde bir dizilim
         */
         for(int i=0; i+2<satir; i++){
             for(int j=2; j<sutun; j++){
                 
-                // eğer T şeklinde bir dizilim varsa, bu dizilimdeki bütün şekerleri sıfıra eşitle (sil)
                 if( oyunTahtasi[i][j]==oyunTahtasi[i+1][j] &&
                     oyunTahtasi[i][j]==oyunTahtasi[i+2][j] &&
                     oyunTahtasi[i][j]==oyunTahtasi[i+2][j-1] &&
@@ -651,12 +652,10 @@ public class Tahta {
           -
           -
         
-        şeklinde bir dizilim
         */
         for(int i=0; i+2<satir; i++){
             for(int j=0; j+2<sutun; j++){
                 
-                // eğer T şeklinde bir dizilim varsa, bu dizilimdeki bütün şekerleri sıfıra eşitle (sil)
                 if( oyunTahtasi[i][j]==oyunTahtasi[i][j+1] &&
                     oyunTahtasi[i][j]==oyunTahtasi[i][j+2] &&
                     oyunTahtasi[i][j]==oyunTahtasi[i+1][j+2] &&
@@ -679,11 +678,11 @@ public class Tahta {
     }
         
     
-    // yan yana ya da üst üste 5 tane şeker varsa o şekerleri sil ve puanı ekle
+	// if there are 5 candies side by side or from top to bottom, remove them and add the points
     public static void besSil(){
         
-        // (0,0)daki şekerden başlayarak bu şekerlerin sağ taraftaki 4 şekere eşit olup olmadığına bak
-        // eğer eşitse bu şekerleri sil
+		// starting from (0,0), check if the next 4 candies are equal to this one
+		// if equal, remove these candies
         for(int i=0; i<satir; i++){
             for(int j=0; j+4<sutun; j++){
                 
@@ -708,8 +707,8 @@ public class Tahta {
         }
         
         
-        // (0,0)daki şekerden başlayarak bu şekerlerin alt taraftaki 4 şekere eşit olup olmadığına bak
-        // eğer eşitse bu şekerleri sil
+		// starting from (0,0), check if the next 4 candies under it are the same as that
+		// if equal, remove these candies
         for(int i=0; i+4<satir; i++){
             for(int j=0; j<sutun; j++){
                 
@@ -735,11 +734,11 @@ public class Tahta {
         
     }
     
-    // yan yana ya da üst üste 4 tane şeker varsa o şekerleri sil ve puanı ekle
+	// if there are 4 candies side by side or from top to bottom, remove them and add the points
     public static void dortSil(){
         
-        // (0,0)daki şekerden başlayarak bu şekerlerin sağ taraftaki 3 şekere eşit olup olmadığına bak
-        // eğer eşitse bu şekerleri sil
+		// starting from (0,0), check if the next 3 candies are equal to this one
+		// if equal, remove these candies
         for(int i=0; i<satir; i++){
             for(int j=0; j+3<sutun; j++){
                 
@@ -762,8 +761,8 @@ public class Tahta {
         }
         
         
-        // (0,0)daki şekerden başlayarak bu şekerlerin alt taraftaki 3 şekere eşit olup olmadığına bak
-        // eğer eşitse bu şekerleri sil
+		// starting from (0,0), check if the next 3 candies under it are the same as that
+		// if equal, remove these candies
         for(int i=0; i+3<satir; i++){
             for(int j=0; j<sutun; j++){
                 
@@ -788,11 +787,11 @@ public class Tahta {
     }
     
     
-    // yan yana ya da üst üste 3 tane şeker varsa o şekerleri sil ve puanı ekle
+	// if there are 3 candies side by side or from top to bottom, remove them and add the points
     public static void ucSil(){
         
-        // (0,0)daki şekerden başlayarak bu şekerlerin sağ taraftaki 2 şekere eşit olup olmadığına bak
-        // eğer eşitse bu şekerleri sil
+		// starting from (0,0), check if the next 2 candies are equal to this one
+		// if equal, remove these candies
         for(int i=0; i<satir; i++){
             for(int j=0; j+2<sutun; j++){
                 
@@ -813,8 +812,8 @@ public class Tahta {
         }
         
         
-        // (0,0)daki şekerden başlayarak bu şekerlerin alt taraftaki 2 şekere eşit olup olmadığına bak
-        // eğer eşitse bu şekerleri sil
+		// starting from (0,0), check if the next 2 candies under it are the same as that
+		// if equal, remove these candies
         for(int i=0; i+2<satir; i++){
             for(int j=0; j<sutun; j++){
                 
@@ -837,24 +836,25 @@ public class Tahta {
     }
     
     
+	// fill in the blank tiles
     public static void bosluklariDoldur(){
         
         for(int i=0; i<satir; i++){
             for(int j=0; j<sutun; j++){
                 
-                // eğer (i,j)deki şeker 0'a eşitse (daha önce silinmişse) bu noktaya rastgele bir şeker yerleştir
+				// if the candy at (i,j) is equal to 0, put a random candy in that tile
                 if(oyunTahtasi[i][j] == 0){
                     
-                    // rastgeşe bir sayı bul
+                    // find a random number
                     Random rand = new Random();
-                    // rastgele sayı ( 1 <= sayi < 6 ) şeklinde olacak
+                    // ( 1 <= rand < 6 )
                     int ilk = 1;
                     int son = 6;
-                    // gereken rastgele sayıyı bul
+                    // generate the number
                     int sayi = rand.nextInt(son-ilk) + ilk;
 
 
-                    // oyun matrisindeki kareyi bulduğun sayıya eşitle
+                    // set the given tile to that number
                     oyunTahtasi[i][j] = sayi;
                     
                 }
@@ -864,22 +864,23 @@ public class Tahta {
         
     }
     
-    
-    // oyun tahtasında yukarı tarafında şeker olan herhangi bir boş kare olup olmadığını kontrol et 
-    // (değeri 0'a eşit olan karelerden herhangi birinin üzerinde şeker varsa true dön)
+	
+	
+	// check if any of the empty tiles has candies above it
+	// (return true if any tile that is equal to 0, has a candy above it)
     public static boolean boslukVarMi(){
         
-        // sıfıra eşit olan bir kare bulduğunda o karenin üzerinde herhangi bir şeker olup olmadığını kontrol et
+		// when you find a tile equal to 0, check if it has any candies above
         for(int i=0; i<satir; i++){
             for(int j=0; j<sutun; j++){
                 
-                // içinde şeker olmayan (sıfıra eşit olan) bir kare varsa
+				// if there is an empty tile (tile that is equal to 0)
                 if(oyunTahtasi[i][j]==0){
                     
-                    // o karenin yukarsındaki bütün kareleri kontrol et
+					// check all tiles above it
                     for(int k=i; k>-1; k--){
                         
-                        // eğer bu yukardaki karelerden biri bile boş değilse true dön
+						// if at least one of these tiles is not empty, return true
                         if(oyunTahtasi[k][j] != 0)
                             return true;
                         
@@ -894,19 +895,19 @@ public class Tahta {
     }
     
     
-    // şekerleri sildikten sonra kalan şekerleri aşağı düşür
+	
+	// after the removal (blowing up the candies), drop down the remaining candies
     public static void sekerleriDusur(){
         
-        // sıfıra eşit olan bütün kareleri yukarı taşıyana kadar aşağıdaki for döngüsünü devam ettir
-        // boşlukVarMi fonksiyonu boş karelerin üzerinde herhangi bir şeker olup olmadığını kontrol eder
+		// continue the while loop until you get all empty tiles to top
+		// boslukVarMi function checks if empty tiles have any candies above them
         while(boslukVarMi()){
-            
-            // her sütun için en alttaki satırdan başla,
-            // eğer satır sıfıra eşitse, o satırın üstündeki bütün satırları birer aşağı indir
+
+			// start from the lowest row for each column
             for(int i=0; i<satir-1; i++){
                 for(int j=0; j<sutun; j++){
 
-                    // koordinattaki şeker numarası sıfırsa (yani buradaki şeker silinmişse)
+					// if the row is equal to 0, move all rows above it down by one
                     if(oyunTahtasi[i+1][j] == 0){
                         
                         oyunTahtasi[i+1][j] = oyunTahtasi[i][j];
@@ -920,9 +921,9 @@ public class Tahta {
     }
     
     
-    // tahtada yapılabilecek geçerli hamle kalıp kalmadığını kontrol et
+    // check if any valid moves are left on the game board
     /*
-    hamleler şu şekillerde olabilir:
+    the moves can be like:
     
     *-  -*  -    -  
     -    -  -    -  
@@ -935,7 +936,7 @@ public class Tahta {
     *         *
     
     */
-    // bu şekillere uyan taş dizilimleri varsa true dön, yoksa false dön
+    // if there are groupings of these kinds, return true
     public static boolean gecerliHamleVarMi(){
         
         /*
@@ -944,7 +945,6 @@ public class Tahta {
         -
         -
         
-        şeklinde dizilim
         */
         for(int i=0; i+2<satir; i++){
             for(int j=1; j<sutun; j++){
@@ -967,7 +967,6 @@ public class Tahta {
          -
          -
         
-        şeklinde dizilim
         */
         for(int i=0; i+2<satir; i++){
             for(int j=0; j+1<sutun; j++){
@@ -990,7 +989,6 @@ public class Tahta {
         -
         *-
         
-        şeklinde dizilim
         */
         for(int i=0; i+2<satir; i++){
             for(int j=0; j+1<sutun; j++){
@@ -1013,7 +1011,6 @@ public class Tahta {
          -
         -*
         
-        şeklinde dizilim
         */
         for(int i=0; i+2<satir; i++){
             for(int j=1; j<sutun; j++){
@@ -1036,7 +1033,6 @@ public class Tahta {
         --*
           -
         
-        şeklinde dizilim
         */
         for(int i=0; i+1<satir; i++){
             for(int j=0; j+2<sutun; j++){
@@ -1058,7 +1054,6 @@ public class Tahta {
           -
         --*
         
-        şeklinde dizilim
         */
         for(int i=0; i+1<satir; i++){
             for(int j=2; j<sutun; j++){
@@ -1079,8 +1074,7 @@ public class Tahta {
         
         *--
         -  
-        
-        şeklinde dizilim
+
         */
         for(int i=0; i+1<satir; i++){
             for(int j=1; j+1<sutun; j++){
@@ -1101,8 +1095,7 @@ public class Tahta {
         
         -
         *--  
-        
-        şeklinde dizilim
+
         */
         for(int i=0; i+1<satir; i++){
             for(int j=0; j+2<sutun; j++){
@@ -1124,8 +1117,7 @@ public class Tahta {
         
         *-*
         -a- 
-        
-        şeklinde dizilim
+
         */
         for(int i=0; i+1<satir; i++){
             for(int j=1; j+1<sutun; j++){
@@ -1146,8 +1138,7 @@ public class Tahta {
         
         -a-
         *-* 
-        
-        şeklinde dizilim
+
         */
         for(int i=0; i+1<satir; i++){
             for(int j=0; j+2<sutun; j++){
@@ -1169,8 +1160,7 @@ public class Tahta {
         -
         *- 
         -
-        
-        şeklinde dizilim
+
         */
         for(int i=0; i+2<satir; i++){
             for(int j=0; j+1<sutun; j++){
@@ -1192,8 +1182,7 @@ public class Tahta {
         *-
         -a 
         *-
-        
-        şeklinde dizilim
+
         */
         for(int i=0; i+2<satir; i++){
             for(int j=1; j<sutun; j++){
@@ -1214,66 +1203,65 @@ public class Tahta {
         
     }
     
-    // tahtadaki bütün şekerleri topla ve hepsini farklı koordinatlara yerleştir
-    // (tahtayı karıştır)
+
+	// function to shuffle the board (when there are no valid moves left)
+	// collect all candies on the board, and put them on different coordinates
     public static void tahtaKaristir(){
         
-        // elindeki şeker türlerini tutmak için bir array oluştur
-        // şeker türü 1 olan şekerlerin sayısı sekerler[1] indexinde tutulacak
-        // şeker türü 2 olan şekerlerin sayısı sekerler[2]'de tutulacak
+		// create an array to keep your candies
+		// candies of type 1 will be kept at sekerler[1], 2 will be kept at sekerler[2] etc..
         int[] sekerler = new int[6];
         
         
-        // tahtada bütün şekerlerden kaçar tane olduğunu bul
+		// find how many of each cany there is on the board
         for(int i=0; i<satir; i++){
             for(int j=0; j<sutun; j++){
                 
-                // tahtadaki her şeker için, o şekerin sayısını bir arttır
-                // oyunTahtasi[i][j]=1 ise, sekerler[1]'i bir arttır. yani 1 numaralı şekerden bir tane daha var demek
+				// for each candy, increase the number of that candy by one
                 sekerler[oyunTahtasi[i][j]]++;
                 
             }
         }
         
         
-        // tahtadaki her kareye, elindeki şekerlerden rastgele bir tanesini yerleştir
-        // elinde rastgele seçtiğin şekerlerden kalmadıysa yeni bir şeker seç
+		// choose one candy randomly and put that on the next tile
+		// if you don't have any remaining candies of that kind, choose a new one
         for(int i=0; i<satir; i++){
             for(int j=0; j<sutun; j++){
                 
-                // rastgeşe bir sayı bul
+                // find a random number
                 Random rand = new Random();
-                // rastgele sayı ( 1 <= sayi < 6 ) şeklinde olacak
+                // ( 1 <= rand < 6 )
                 int ilk = 1;
                 int son = 6;
-                // gereken rastgele sayıyı bul
+                // generate it
                 int sayi = rand.nextInt(son-ilk) + ilk;
                 
                 
-                // rastgele seçtiğin şekerin sayısı sıfırdan büyükse, o şekeri tahtaya yerleştir ve sayısını bir azalt
+				// if you have at least one of that kind of candy, put it on the tile and decrease its number by one
                 if(sekerler[sayi] > 0){
                     
                     oyunTahtasi[i][j] = sayi;
                     sekerler[sayi]--;
                     
                 }
-                // şeker sayısı sıfırsa (elinde o şekerden kalmadıysa) elinde olan bir şeker bulana kadar yeni bir şeker seç
+				// if you don't have that kind of candy, choose a new candy until you find one that you have
                 else {
                     
-                    // sayısı sıfırdan büyük olan yeni bir şeker bulana kadar dene
+					// try until you select a candy of which you have at least one
                     while(sekerler[sayi]==0){
                         
-                        // rastgeşe bir sayı bul
+                        // find random number
                         rand = new Random();
-                        // rastgele sayı ( 1 <= sayi < 6 ) şeklinde olacak
+                        //  ( 1 <= rand < 6 ) 
                         ilk = 1;
                         son = 6;
-                        // gereken rastgele sayıyı bul
+                        // generate number
                         sayi = rand.nextInt(son-ilk) + ilk;
                         
                     }
                     
-                    // yeni şekeri bulunca tahtaya yerleştir ve sayısını bir azalt
+                    // put the candy on the tile and decrease its number by one
                     oyunTahtasi[i][j] = sayi;
                     sekerler[sayi]--;
                     
@@ -1285,17 +1273,17 @@ public class Tahta {
     }
     
     
-    // oyunu oynat
+	// play the game
     public static void oyunuOynat(){
-   
-        // kullanıcı inputunu almak için scanner oluştur
+
+		// create scanner to take user input
         Scanner keyboard = new Scanner(System.in);
         
         
-        // tahta büyüklüğünü al
+        // take the board's size
         System.out.print("Tahta büyüklüğü : ");
         String input = keyboard.nextLine();
-        // inputu space karakterinden satır ve sütun olarak ayır
+        // split the input from the space character
         String[] splitted = new String[2];
         splitted = input.split("\\s+");
         satir = Integer.parseInt(splitted[0]);
@@ -1305,38 +1293,40 @@ public class Tahta {
         
         //System.out.println(input);
         
-        // maksimum hamle sayısını al
+        // take the maximum number of moves
         System.out.print("Maksimum hamle sayısı : ");
         input = keyboard.nextLine();
         maxHamle = Integer.parseInt(input);
         int kalanHamle = maxHamle;
         
         
-        // ulaşılması gereken puanı al
+        // take the goal score
         System.out.print("Ulaşılması gereken puan : ");
         input = keyboard.nextLine();
         hedefPuan = Integer.parseInt(input);
         
         System.out.println();
         
-        // oyun bittiğinde (kalanHamle = 0 olduğunda) stop=1 olacak ve while döngüsü sonlanacak
+
+		// when the game is over (when kalanHamle = 0), stop will be set to 1 and while loop will end
         int stop = 0;
         
         while(stop != 1){
             
-            // geçerli hamle yoksa tahtayı karıştır
+            // if no valid moves, shuffle the board
             while(!gecerliHamleVarMi()){
                 
                 tahtaKaristir();
                 
             }
             
-            // tahtada patlatılacak şeker grupları yok olana kadar patlatmayı yap ve tahtayı yeniden doldur
+
+			// until there are no more blowable candy groups, blow them up and fill the board again
             while(patlamaVarMi()){
 
                 //System.out.println("BOOOM");
 
-                // T şeklindeki gruplardan başlayarak bütün şeker gruplarını teker teker sil
+				// remove all candy groups starting from the ones shaped like T
                 buyukTSil();
                 tSil();
                 LSil();
@@ -1344,20 +1334,20 @@ public class Tahta {
                 dortSil();
                 ucSil();
 
-                // şekerleri sildikten sonra kalan şekerleri aşağı düşür
+                // drop down the remaining candies
                 sekerleriDusur();
                 
                 //System.out.println(1);
                 //tahtayiYazdir();
                 
                 //System.out.println(1);
-                // bütün gruplar silindikten sonra tahtadaki boş kısımları doldur
+                // fill in the blank tiles after all candies are blown up
                 bosluklariDoldur();
 
 
             }
             
-            // tahtayı yazdır
+            // print the board
             tahtayiYazdir();
             System.out.println();
             
@@ -1365,11 +1355,12 @@ public class Tahta {
             System.out.println("Kalan hamle sayısı : " + kalanHamle);
             
             
-            // kalan hamle sayısı sıfırsa oyunu bitir
+            // if number of remaining moves (kalanHamle) is equal to 0, end the game
             if(kalanHamle == 0){
                 
                 
                 // kullanıcının topladığı puan hedef puandan büyük ya da ona eşitse oyunu kazanmıştır
+				// if the user score is greater than or equal to the goal, print "You won"
                 if(toplamPuan >= hedefPuan){
                     
                     System.out.println("Tebrikler, kazandınız.");
@@ -1382,50 +1373,51 @@ public class Tahta {
                 }
                 
                 
-                // while döngüsünü bitirmek için stop'u bire eşitle
+                // to stop the while loop, set stop to 1
                 stop = 1;
                 
             }
             
-            // kalan hamle sayısı sıfırdan büyükse oyuna devam et
+			// if number of remaining moves is more than 1, continue with the game 
             else {
                 
                 
-                // eğer tahtada yapılabilecek bir hamle varsa, kullanıcıdan input al
+				// if there is a valid move on the board, take user input
                 if(gecerliHamleVarMi()){
                     
-                    // bir sonraki hamleyi al
+                    // take the next move
                     System.out.print("Bir sonraki hamleyi giriniz : ");
                     input = keyboard.nextLine();
-                    // inputu space karakterinden birinci ve ikinci koordinat olarak ayır
+                    // split the first and second coordinates
                     splitted = new String[2];
                     splitted = input.split("\\s+");
                     String birinci = splitted[0];
                     String ikinci = splitted[1];
                     
-                    // birinci koordinatı "," karakterinden ayır ve x1 ve y1 koordinatlarına ata
+                    
+					// split the first coordinate from "," character and set x1,y1 coordinates
                     splitted = birinci.split(",");
                     int x1 = Integer.parseInt(splitted[0]);
                     int y1 = Integer.parseInt(splitted[1]);
-                    // ikinci koordinatı "," karakterinden ayır ve x2 ve y2 koordinatlarına ata
+					// split the second coordinate from "," character and set x2,y2 coordinates
                     splitted = ikinci.split(",");
                     int x2 = Integer.parseInt(splitted[0]);
                     int y2 = Integer.parseInt(splitted[1]);
                     
                     
-                    // kullanıcının verdiği hamle geçerliyse işlemi yap
+                    // if the move given by the user is valid,
                     if(hamleGecerliMi(x1, y1, x2, y2)){
                     
-                        // hamleyi yap
+                        // make the move
                         hamleYap(x1, y1, x2, y2);
                         
                         
-                        // tahtada patlatılacak şeker grupları yok olana kadar patlatmayı yap ve tahtayı yeniden doldur
+						// until the blowable candy groups are gone, blow them up and fill up the board again
                         while(patlamaVarMi()){
                             
                             //System.out.println("BOOOM");
                             
-                            // T şeklindeki gruplardan başlayarak bütün şeker gruplarını teker teker sil
+                            // remove all candy groups starting from the ones shaped like T
                             buyukTSil();
                             tSil();
                             LSil();
@@ -1433,25 +1425,17 @@ public class Tahta {
                             dortSil();
                             ucSil();
 
-                            // şekerleri sildikten sonra kalan şekerleri aşağı düşür
+                            // drop down remaining candies
                             sekerleriDusur();
-
-                            //System.out.println();
-                            //tahtayiYazdir();
                             
-                            // bütün gruplar silindikten sonra tahtadaki boş kısımları doldur
+                            // fill in the blanks
                             bosluklariDoldur();
                             
-                            //System.out.println();
-                            //tahtayiYazdir();
-                            
-                            // her patlatmadan sonra tahtayı yeniden yazdır
-                            //tahtayiYazdir();
-                            
+ 
                         }
 
                         
-                        // hamle yapıldıktan sonra hamle sayısını bir eksilt
+                        // decrease remaining number of moves by one
                         kalanHamle--;
                         
                     }
@@ -1462,11 +1446,11 @@ public class Tahta {
                     }
                     
                 }
-                // yapılacak hamle yoksa tahtayı karıştır
+                // if no more valid moves, shuffle the game board
                 else {
                     
                     
-                    // tahtada yapılacak herhangi bir hamle oluşana kadar tahtayı karıştır
+                    // shuffle the board until there is at least one valid move
                     while(!gecerliHamleVarMi())
                         tahtaKaristir();
                     
@@ -1484,10 +1468,10 @@ public class Tahta {
     }
     
     
-    // tahtanın mevcut durumunu ekrana yazdır
+    // print the current state of the game board
     public static void tahtayiYazdir(){
         
-        // tahtadaki bütün kareler için o karedeki karakterleri yazdır
+        // print the given character for each tile on the board
         // 1='1' 2='*' 3='-' 4='8' 5='a'
         for(int i=0; i<satir; i++){
             
